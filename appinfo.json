@@ -1,0 +1,29 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "alvaro.bravo.m@gmail.com",
+    "longName": "color_analog",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/background_gothic.png",
+                "name": "IMAGE_BACKGROUND",
+                "type": "png"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "color_analog",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
+    "uuid": "6244aea0-81de-491d-b95f-633ca6fbc79d",
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
