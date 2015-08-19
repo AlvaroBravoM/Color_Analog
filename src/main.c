@@ -6,12 +6,15 @@
 static Window *s_main_window;
 static TextLayer *s_time_layer;
 static TextLayer *s_weather_layer;
- 
+
+static GBitmap *hour_bitmap, *minute_bitmap;
+static BitmapLayer *hour_layer, *minute_layer;
+
 static GFont s_time_font;
 static GFont s_weather_font;
  
-static BitmapLayer *s_background_layer, *hour_hand_layer;
-static GBitmap *s_background_bitmap, *hour_hand_bitmap;
+static BitmapLayer *s_background_layer;
+static GBitmap *s_background_bitmap;
  
 static void update_time() {
   // Get a tm structure
@@ -32,6 +35,9 @@ static void update_time() {
  
   // Display this time on the TextLayer
   text_layer_set_text(s_time_layer, buffer);
+  
+  //gpath_rotate_to(s_hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
+  //void graphics_draw_rotated_bitmap
 }
  
 static void main_window_load(Window *window) {
@@ -39,15 +45,40 @@ static void main_window_load(Window *window) {
   s_background_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_BACKGROUND);
   s_background_layer = bitmap_layer_create(GRect(0, 0, 144, 168));
   bitmap_layer_set_bitmap(s_background_layer, s_background_bitmap);
-  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_background_layer));
   
-  //Create Hour Hand
-  hour_hand_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_MINUTE);
-  hour_hand_layer = bitmap_layer_create(GRect(39, 19, 71, 89));
-  bitmap_layer_set_bitmap(hour_hand_layer, hour_hand_bitmap);
-  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(hour_hand_layer));
+  Layer *window_layer = window_get_root_layer(window);
+  layer_add_child(window_layer, bitmap_layer_get_layer(s_background_layer));
   
-  //Create Minute Hand
+  GRect bounds = layer_get_bounds(window_get_root_layer(window));
+  
+  
+  hour_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_HOUR_WHITE);
+  minute_bitmap = gbitmap_create_with_resource(RESOURCE_ID_IMAGE_MINUTE_WHITE);
+
+  GPoint center = grect_center_point(&bounds);
+  GSize hour_image_size = gbitmap_get_bounds(hour_bitmap).size;
+  GSize minute_image_size = gbitmap_get_bounds(minute_bitmap).size;
+
+  GRect hour_image_frame = GRect(center.x, center.y, hour_image_size.w, hour_image_size.h);
+  hour_image_frame.origin.x = center.x - hour_image_size.w/2; //-= hour_image_size.w / 2;
+  hour_image_frame.origin.y = center.y - hour_image_size.h - 5; //-= hour_image_size.h / 2;
+
+  GRect minute_image_frame = GRect(center.x, center.y, minute_image_size.w, minute_image_size.h);
+  minute_image_frame.origin.x = center.x - minute_image_size.w/2; //-= minute_image_size.w / 2;
+  minute_image_frame.origin.y = center.y - minute_image_size.h - 5; //-= minute_image_size.h / 2;
+
+  // Use GCompOpOr to display the white portions of the hour image
+  hour_layer = bitmap_layer_create(hour_image_frame);
+  bitmap_layer_set_bitmap(hour_layer, hour_bitmap);
+  bitmap_layer_set_compositing_mode(hour_layer, GCompOpOr);
+  layer_add_child(window_layer, bitmap_layer_get_layer(hour_layer));
+
+
+  // Use GCompOpOr to display the white portions of the minute image
+  minute_layer = bitmap_layer_create(minute_image_frame);
+  bitmap_layer_set_bitmap(minute_layer, minute_bitmap);
+  bitmap_layer_set_compositing_mode(minute_layer, GCompOpOr);
+  layer_add_child(window_layer, bitmap_layer_get_layer(minute_layer));
   
   //Create Second Hand
   
@@ -56,9 +87,6 @@ static void main_window_load(Window *window) {
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_text_color(s_time_layer, GColorWhite);
   text_layer_set_text(s_time_layer, "00:00");
-  
-  //Create GFont
-  //s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PERFECT_DOS_48));
   
   //Apply to TextLayer
   text_layer_set_font(s_time_layer, fonts_get_system_font(FONT_KEY_GOTHIC_24));

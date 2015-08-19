@@ -9,23 +9,23 @@
     "resources": {
         "media": [
             {
+                "file": "images/background_gothic_24.png",
+                "name": "IMAGE_BACKGROUND",
+                "type": "png"
+            },
+            {
                 "file": "images/a_minute_hand.png",
                 "name": "IMAGE_MINUTE",
-                "type": "png"
+                "type": "png-trans"
             },
             {
                 "file": "images/a_hour_hand.png",
                 "name": "IMAGE_HOUR",
-                "type": "png"
+                "type": "png-trans"
             },
             {
                 "file": "images/e_second_hand.png",
                 "name": "IMAGE_SECOND",
-                "type": "png"
-            },
-            {
-                "file": "images/background_gothic_24.png",
-                "name": "IMAGE_BACKGROUND",
                 "type": "png"
             }
         ]
